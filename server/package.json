@@ -1,0 +1,24 @@
+{
+  "name": "playlistwars",
+  "version": "1.0.0",
+  "description": "Playlist Wars backend",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paulochoi/playlistwars.git"
+  },
+  "author": "Paulo Choi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/paulochoi/playlistwars/issues"
+  },
+  "homepage": "https://github.com/paulochoi/playlistwars#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "nodemon": "^2.0.7"
+  }
+}

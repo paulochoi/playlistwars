@@ -1,0 +1,36 @@
+{
+  "name": "playlistwars",
+  "version": "1.0.0",
+  "description": "Dynamic playlists",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "NODE_ENV=production webpack",
+    "dev": "NODE_ENV=development webpack-dev-server --open --hot --inline --progress --colors --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paulochoi/playlistwars.git"
+  },
+  "author": "Paulo Choi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/paulochoi/playlistwars/issues"
+  },
+  "homepage": "https://github.com/paulochoi/playlistwars#readme",
+  "dependencies": {
+    "@babel/core": "^7.13.10",
+    "@babel/preset-env": "^7.13.10",
+    "@babel/preset-react": "^7.12.13",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^8.2.2",
+    "css-loader": "^5.1.2",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
+  },
+  "devDependencies": {
+    "webpack": "^4.45.0",
+    "webpack-cli": "^3.2.3",
+    "webpack-dev-server": "^3.11.2"
+  }
+}

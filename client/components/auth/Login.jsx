@@ -15,10 +15,17 @@ const Login = () => {
       })
         .then((response) => response.json())
         .then((val) => {
-          console.log(val);
           setUser(val);
         })
         .catch(() => console.log);
+
+      fetch("https://api.spotify.com/v1/me/playlists", {
+        headers: { Authorization: "Bearer " + loginState },
+      })
+        .then((response) => response.json())
+        .then((playlistData) => {
+          console.log(playlistData);
+        });
     }
   }, []);
   return (

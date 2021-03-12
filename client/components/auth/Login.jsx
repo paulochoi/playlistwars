@@ -5,7 +5,7 @@ import queryString from "query-string";
 
 const url = "http://localhost:3000";
 const Login = () => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({});
   useEffect(() => {
     const parsed = queryString.parse(window.location.search);
     const loginState = parsed.access_token;
@@ -16,11 +16,11 @@ const Login = () => {
         .then((response) => response.json())
         .then((val) => {
           console.log(val);
-          setUser(val.display_name);
+          setUser(val);
         })
         .catch(() => console.log);
     }
-  });
+  }, []);
   return (
     <>
       <Button
@@ -29,7 +29,7 @@ const Login = () => {
       >
         Primary
       </Button>
-      {user}
+      {user.display_name}
     </>
   );
 };

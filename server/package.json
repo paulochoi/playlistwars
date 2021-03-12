@@ -19,6 +19,7 @@
   "homepage": "https://github.com/paulochoi/playlistwars#readme",
   "dependencies": {
     "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "eslint-config-prettier": "^8.1.0",
     "express": "^4.17.1",

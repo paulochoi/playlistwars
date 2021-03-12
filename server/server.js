@@ -2,20 +2,25 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const querystring = require('querystring');
 const request = require('request'); // "Request" library
-const { getRandomString } = require('./utils/auth.js');
+const cors = require('cors');
+require('dotenv').config();
+
+const { generateRandomString } = require('./utils/auth.js');
 
 const app = express();
 const PORT = '3000';
 const STATE_KEY = 'spotify_auth_state';
 
+app.use(cors());
 app.use(cookieParser());
 
-app.get('/', (req, res, next) => {
+app.get('/', (req, res) => {
   res.json({ message: 'YO!' });
+  console.log('clientit', process.env.CLIENT_ID);
 });
 
-app.get('/login', (req, res, next) => {
-  const state = getRandomString();
+app.get('/login', (req, res) => {
+  const state = generateRandomString();
   res.cookie(STATE_KEY, state);
   const scope =
     'user-read-currently-playing streaming playlist-modify-public user-read-email';
@@ -34,7 +39,7 @@ app.get('/login', (req, res, next) => {
 app.get('/callback', (req, res) => {
   // your application requests refresh and access tokens
   // after checking the state parameter
-
+  console.log('hittin callback?');
   const code = req.query.code || null;
   const state = req.query.state || null;
   const storedState = req.cookies ? req.cookies[STATE_KEY] : null;

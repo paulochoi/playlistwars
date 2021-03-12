@@ -20,10 +20,11 @@ app.get('/', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-  const state = generateRandomString();
+  const state = generateRandomString(16);
+  console.log(STATE_KEY, state);
   res.cookie(STATE_KEY, state);
   const scope =
-    'user-read-currently-playing streaming playlist-modify-public user-read-email';
+    'user-read-currently-playing streaming playlist-modify-public user-read-email user-read-private';
 
   res.redirect(
     `https://accounts.spotify.com/authorize?${querystring.stringify({
@@ -43,7 +44,6 @@ app.get('/callback', (req, res) => {
   const code = req.query.code || null;
   const state = req.query.state || null;
   const storedState = req.cookies ? req.cookies[STATE_KEY] : null;
-
   if (state === null || state !== storedState) {
     res.redirect(
       `/#${querystring.stringify({
@@ -60,43 +60,20 @@ app.get('/callback', (req, res) => {
         grant_type: 'authorization_code',
       },
       headers: {
-        Authorization: `Basic${Buffer.from(
+        Authorization: `Basic ${Buffer.from(
           `${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`
         ).toString('base64')}`,
       },
       json: true,
     };
 
+    console.log(authOptions);
+
     request.post(authOptions, (error, response, body) => {
-      if (!error && response.statusCode === 200) {
-        const accessToken = body.access_token;
-        const refreshToken = body.refresh_token;
-
-        const options = {
-          url: 'https://api.spotify.com/v1/me',
-          headers: { Authorization: `Bearer${accessToken}` },
-          json: true,
-        };
-
-        // use the access token to access the Spotify Web API
-        request.get(options, (error, response, body) => {
-          console.log(body);
-        });
-
-        // we can also pass the token to the browser to make requests from there
-        res.redirect(
-          `/#${querystring.stringify({
-            access_token: accessToken,
-            refresh_token: refreshToken,
-          })}`
-        );
-      } else {
-        res.redirect(
-          `/#${querystring.stringify({
-            error: 'invalid_token',
-          })}`
-        );
-      }
+      console.log(body);
+      const { access_token } = body;
+      const uri = process.env.FRONTEND_URI || 'http://localhost:8080';
+      res.redirect(uri + '?access_token=' + access_token);
     });
   }
 });

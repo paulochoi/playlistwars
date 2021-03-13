@@ -1,11 +1,14 @@
 const getPlaylists = (loginState) => {
-  fetch("https://api.spotify.com/v1/me/playlists", {
-    headers: { Authorization: "Bearer " + loginState },
-  })
-    .then((response) => response.json())
-    .then((playlistData) => {
-      console.log(playlistData);
-    });
+  return new Promise((resolve, reject) => {
+    fetch("https://api.spotify.com/v1/me/playlists", {
+      headers: { Authorization: "Bearer " + loginState },
+    })
+      .then((response) => response.json())
+      .then((playlistData) => {
+        console.log(playlistData);
+        resolve(playlistData);
+      });
+  });
 };
 
 const getUserInfo = (loginState) => {

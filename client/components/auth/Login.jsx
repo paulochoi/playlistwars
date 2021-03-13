@@ -14,6 +14,7 @@ const url = "http://localhost:3000";
 const Login = () => {
   const [name, setName] = useState("");
   const [image, setImage] = useState("");
+  const [playlists, setPlaylists] = useState([]);
   const [loggedOn, setLoggedOn] = useState(false);
   useEffect(async () => {
     const parsed = queryString.parse(window.location.search);
@@ -23,6 +24,9 @@ const Login = () => {
       const { status, device_id, instance } = await setupPlayer(loginState);
       SpotifyAPI.getPlaylists(loginState);
       const user = await SpotifyAPI.getUserInfo(loginState);
+      const playlists = await SpotifyAPI.getPlaylists(loginState);
+      console.log(playlists.items);
+      setPlaylists(playlists.items);
       const { display_name, email, images } = user;
       setName(display_name);
       setImage(images[0].url);
@@ -70,7 +74,7 @@ const Login = () => {
           </Row>
         </>
       ) : (
-        <MainContainer name={name} image={image} />
+        <MainContainer name={name} image={image} playLists={playlists} />
       )}
     </Container>
   );

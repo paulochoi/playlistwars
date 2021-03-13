@@ -3,6 +3,8 @@ import Cookies from "js-cookie";
 import Button from "react-bootstrap/Button";
 import queryString from "query-string";
 import { setupPlayer } from "../../player/player.js";
+import * as Player from "../../player/playerAPI.js";
+import * as SpotifyAPI from "../../player/webApi.js";
 
 const url = "http://localhost:3000";
 const Login = () => {
@@ -11,38 +13,23 @@ const Login = () => {
     const parsed = queryString.parse(window.location.search);
     const loginState = parsed.access_token;
     if (loginState) {
-      const deviceID = await setupPlayer(loginState);
-      console.log(deviceID);
+      const { status, device_id, instance } = await setupPlayer(loginState);
+      SpotifyAPI.getPlaylists(loginState);
+      if (status === "ready") {
+        // await Player.playSong(
+        //   device_id,
+        //   "spotify:playlist:37i9dQZF1DWWwaxRea1LWS",
+        //   loginState
+        // );
+        // console.log("instance on login", instance);
+        // Player.getCurrentState(instance);
+        // Player.getVolume(instance);
+      }
 
-      fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceID}`, {
-        method: "PUT",
-        body: JSON.stringify({
-          uris: ["spotify:track:7xGfFoTpQ2E7fRF5lN10tr"],
-        }),
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${loginState}`,
-        },
-      }).then((a) => console.log(a));
-
-      fetch("https://api.spotify.com/v1/me", {
-        headers: { Authorization: "Bearer " + loginState },
-      })
-        .then((response) => response.json())
-        .then((val) => {
-          setUser(val);
-        })
-        .catch(() => console.log);
-
-      fetch("https://api.spotify.com/v1/me/playlists", {
-        headers: { Authorization: "Bearer " + loginState },
-      })
-        .then((response) => response.json())
-        .then((playlistData) => {
-          console.log(playlistData);
-        });
+      console.log(device_id);
     }
-  }, []);
+  });
+
   return (
     <>
       <Button

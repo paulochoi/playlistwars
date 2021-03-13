@@ -3,7 +3,7 @@ const setupPlayer = (authToken) => {
     window.onSpotifyWebPlaybackSDKReady = () => {
       const token = authToken;
       const player = new Spotify.Player({
-        name: "Web Playback SDK Quick Start Player",
+        name: "Playlist Wars",
         getOAuthToken: (cb) => {
           cb(token);
         },
@@ -12,26 +12,31 @@ const setupPlayer = (authToken) => {
       // Error handling
       player.addListener("initialization_error", ({ message }) => {
         console.error(message);
+        reject(message);
       });
       player.addListener("authentication_error", ({ message }) => {
         console.error(message);
+        reject(message);
       });
       player.addListener("account_error", ({ message }) => {
         console.error(message);
+        reject(message);
       });
       player.addListener("playback_error", ({ message }) => {
         console.error(message);
+        reject(message);
       });
 
       // Playback status updates
       player.addListener("player_state_changed", (state) => {
         console.log(state);
+        resolve({ status: "changed", device_id: null });
       });
 
       // Ready
       player.addListener("ready", ({ device_id }) => {
         console.log("Ready with Device ID", device_id);
-        resolve(device_id);
+        resolve({ status: "ready", device_id, instance: player });
       });
 
       // Not Ready

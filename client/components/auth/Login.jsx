@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Cookies from "js-cookie";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
@@ -9,10 +8,12 @@ import Jumbotron from "react-bootstrap/Jumbotron";
 import { setupPlayer } from "../../player/player.js";
 import * as Player from "../../player/playerAPI.js";
 import * as SpotifyAPI from "../../player/webApi.js";
+import MainContainer from "../mainApp/MainContainer.jsx";
 
 const url = "http://localhost:3000";
 const Login = () => {
-  const [user, setUser] = useState({});
+  const [name, setName] = useState("");
+  const [image, setImage] = useState("");
   const [loggedOn, setLoggedOn] = useState(false);
   useEffect(async () => {
     const parsed = queryString.parse(window.location.search);
@@ -21,6 +22,10 @@ const Login = () => {
     if (loginState) {
       const { status, device_id, instance } = await setupPlayer(loginState);
       SpotifyAPI.getPlaylists(loginState);
+      const user = await SpotifyAPI.getUserInfo(loginState);
+      const { display_name, email, images } = user;
+      setName(display_name);
+      setImage(images[0].url);
       if (status === "ready") {
         // await Player.playSong(
         //   device_id,
@@ -37,32 +42,35 @@ const Login = () => {
   return (
     <Container>
       {!loggedOn ? (
-        <Row>
-          <Col md lg="2"></Col>
-          <Col>
-            <Jumbotron bg="dark" variant="dark">
-              <h1>PLAYLIST WARS</h1>
-              <p>
-                Vote on your favorite song. The most upvoted song will be played
-                next!
-              </p>
-              <p>
-                <Button
-                  variant="success"
-                  onClick={() => {
-                    window.location = `${url}/login`;
-                    setLoggedOn(true);
-                  }}
-                >
-                  Login with Spotify
-                </Button>
-              </p>
-            </Jumbotron>
-          </Col>
-          <Col md lg="2"></Col>
-        </Row>
+        <>
+          <br></br>
+          <Row>
+            <Col md lg="2"></Col>
+            <Col>
+              <Jumbotron bg="dark" variant="dark">
+                <h1>PLAYLIST WARS</h1>
+                <p>
+                  Vote on your favorite song. The most upvoted song will be
+                  played next!
+                </p>
+                <p>
+                  <Button
+                    variant="success"
+                    onClick={() => {
+                      window.location = `${url}/login`;
+                      setLoggedOn(true);
+                    }}
+                  >
+                    Login with Spotify
+                  </Button>
+                </p>
+              </Jumbotron>
+            </Col>
+            <Col md lg="2"></Col>
+          </Row>
+        </>
       ) : (
-        <span>LoggedOn</span>
+        <MainContainer name={name} image={image} />
       )}
     </Container>
   );

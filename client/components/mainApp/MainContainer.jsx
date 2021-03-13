@@ -1,18 +1,33 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "react-bootstrap/Navbar";
 import Select from "react-select";
+// import { setupPlayer } from "../../player/player.js";
+import * as SpotifyAPI from "../../player/webApi.js";
+import * as Player from "../../player/playerAPI.js";
 
-const MainContainer = ({ name, image, playLists }) => {
+const MainContainer = ({
+  name,
+  image,
+  playLists,
+  loginState,
+  playerInstance,
+  clientID,
+}) => {
   const [options, setOptions] = useState([]);
-  useEffect(() => {
+  const [selected, setSelected] = useState();
+  const [currentTrack, setCurrentTrack] = useState();
+  useEffect(async () => {
     const tempOptions = [];
     if (playLists && playLists.length > 0) {
+      console.log("LOGINSTATE", loginState);
+      // const { status, device_id, instance } = await setupPlayer(loginState);
+      //setDeviceID(device_id);
       console.log("Loaded Playlist");
       console.log(playLists);
       for (const p of playLists) {
         if (p.images[2]) {
           tempOptions.push({
-            value: p.ur,
+            value: p.id,
             label: (
               <span>
                 <img
@@ -33,6 +48,18 @@ const MainContainer = ({ name, image, playLists }) => {
     }
   }, [playLists]);
 
+  const playlistSelected = async (e) => {
+    console.log(e.label.props.children[1]);
+    setSelected(e.label.props.children[1]);
+    console.log(e.value);
+    const tracks = await SpotifyAPI.getPlaylistTracks(loginState, e.value);
+    console.log(tracks);
+    await Player.playSong(clientID, tracks.items[0].track.uri, loginState);
+    console.log("instance on login", playerInstance);
+    Player.getCurrentState(playerInstance);
+    Player.getVolume(playerInstance);
+  };
+
   return (
     <>
       <Navbar bg="dark" variant="dark" fixed="top">
@@ -44,6 +71,7 @@ const MainContainer = ({ name, image, playLists }) => {
                 <Select
                   options={options}
                   defaultValue={{ label: "Select your Playlist", value: 0 }}
+                  onChange={playlistSelected}
                 />
               </span>
               <Navbar.Text className="p-2">
@@ -69,7 +97,7 @@ const MainContainer = ({ name, image, playLists }) => {
         <Navbar.Brand>PLAYLIST WARS</Navbar.Brand>
         <Navbar.Collapse className="justify-content-end">
           <Navbar.Text>
-            Signed in as: <a href="#login">Mark Otto</a>
+            Current Playlist: <a href="#login">{selected}</a>
           </Navbar.Text>
         </Navbar.Collapse>
       </Navbar>

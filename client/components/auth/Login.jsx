@@ -16,12 +16,17 @@ const Login = () => {
   const [image, setImage] = useState("");
   const [playlists, setPlaylists] = useState([]);
   const [loggedOn, setLoggedOn] = useState(false);
+  const [loginState, setLoginState] = useState();
+  const [playerInstance, setPlayerInstance] = useState({});
+  const [clientID, setClientID] = useState();
   useEffect(async () => {
     const parsed = queryString.parse(window.location.search);
     if (Object.entries(parsed).length > 0) setLoggedOn(true);
-    const loginState = parsed.access_token;
+    setLoginState(parsed.access_token);
     if (loginState) {
       const { status, device_id, instance } = await setupPlayer(loginState);
+      setPlayerInstance(instance);
+      setClientID(device_id);
       SpotifyAPI.getPlaylists(loginState);
       const user = await SpotifyAPI.getUserInfo(loginState);
       const playlists = await SpotifyAPI.getPlaylists(loginState);
@@ -30,18 +35,18 @@ const Login = () => {
       const { display_name, email, images } = user;
       setName(display_name);
       setImage(images[0].url);
-      if (status === "ready") {
-        // await Player.playSong(
-        //   device_id,
-        //   "spotify:playlist:37i9dQZF1DWWwaxRea1LWS",
-        //   loginState
-        // );
-        // console.log("instance on login", instance);
-        // Player.getCurrentState(instance);
-        // Player.getVolume(instance);
-      }
+      // if (status === "ready") {
+      //   // await Player.playSong(
+      //   //   device_id,
+      //   //   "spotify:track:1LNroGH4W4RsUVjIFUsrUA",
+      //   //   loginState
+      //   // );
+      //   // console.log("instance on login", instance);
+      //   Player.getCurrentState(instance);
+      //   Player.getVolume(instance);
+      // }
     }
-  });
+  }, [loginState]);
 
   return (
     <Container>
@@ -74,7 +79,14 @@ const Login = () => {
           </Row>
         </>
       ) : (
-        <MainContainer name={name} image={image} playLists={playlists} />
+        <MainContainer
+          name={name}
+          image={image}
+          playLists={playlists}
+          loginState={loginState}
+          clientID={clientID}
+          playerInstance={playerInstance}
+        />
       )}
     </Container>
   );

@@ -1,4 +1,5 @@
 const setupPlayer = (authToken) => {
+  console.log("THE AUTH TOKEN IS", authToken);
   return new Promise((resolve, reject) => {
     window.onSpotifyWebPlaybackSDKReady = () => {
       const token = authToken;
@@ -8,6 +9,7 @@ const setupPlayer = (authToken) => {
           cb(token);
         },
       });
+      console.log(player);
 
       // Error handling
       player.addListener("initialization_error", ({ message }) => {

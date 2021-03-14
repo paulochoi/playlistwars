@@ -16,6 +16,10 @@ const MainContainer = ({
   const [options, setOptions] = useState([]);
   const [selected, setSelected] = useState();
   const [currentTrack, setCurrentTrack] = useState();
+  const [playing, setPlaying] = useState();
+  const [trackLength, setTrackLength] = useState("0:00");
+  const [currentTrackTime, setCurrentTrackTime] = useState("0:00");
+  const [playlistTracks, setPlaylistTracks] = useState();
   useEffect(async () => {
     const tempOptions = [];
     if (playLists && playLists.length > 0) {
@@ -51,12 +55,36 @@ const MainContainer = ({
   const playlistSelected = async (e) => {
     console.log(e.label.props.children[1]);
     setSelected(e.label.props.children[1]);
+    // Set a fake timeout to get the highest timeout id
+    var highestTimeoutId = setTimeout(";");
+    for (var i = 0; i < highestTimeoutId; i++) {
+      clearTimeout(i);
+    }
     console.log(e.value);
+    let interval = 0;
     const tracks = await SpotifyAPI.getPlaylistTracks(loginState, e.value);
     console.log(tracks);
+    setPlaylistTracks(tracks);
     await Player.playSong(clientID, tracks.items[0].track.uri, loginState);
-    console.log("instance on login", playerInstance);
-    Player.getCurrentState(playerInstance);
+    const currentTrack = await Player.getCurrentState(playerInstance);
+    setPlaying(currentTrack);
+    console.log("CURRENT TRACK", currentTrack);
+    setTrackLength(
+      Math.floor(currentTrack.duration_ms / 1000 / 60) +
+        ":" +
+        ((currentTrack.duration_ms / 1000) % 60
+          ? Math.round((currentTrack.duration_ms / 1000) % 60)
+          : "00")
+    );
+    setInterval(() => {
+      interval += 1000;
+      setCurrentTrackTime(
+        Math.floor(interval / 1000 / 60) +
+          ":" +
+          ((interval / 1000) % 60 ? Math.round((interval / 1000) % 60) : "00")
+      );
+    }, 1000);
+    console.log("Playing=====", playing);
     Player.getVolume(playerInstance);
   };
 
@@ -94,10 +122,28 @@ const MainContainer = ({
       </Navbar>
 
       <Navbar bg="dark" variant="dark" fixed="bottom">
-        <Navbar.Brand>PLAYLIST WARS</Navbar.Brand>
+        {playing ? (
+          <>
+            <Navbar.Brand href="#home" className="p-1">
+              <img
+                src={playing.album.images[1].url}
+                width="30"
+                height="30"
+              ></img>
+            </Navbar.Brand>
+            <Navbar.Text>
+              {playing.artists[0].name} - {playing.name} - {trackLength} -{" "}
+              {currentTrackTime}
+            </Navbar.Text>
+          </>
+        ) : null}
         <Navbar.Collapse className="justify-content-end">
           <Navbar.Text>
-            Current Playlist: <a href="#login">{selected}</a>
+            {selected ? (
+              <>
+                Current Playlist: <a href="#login">{selected}</a>
+              </>
+            ) : null}
           </Navbar.Text>
         </Navbar.Collapse>
       </Navbar>

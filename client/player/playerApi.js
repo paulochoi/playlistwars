@@ -24,17 +24,20 @@ const getVolume = (player) => {
 
 const getCurrentState = async (player) => {
   const state = await player.getCurrentState();
-  console.log("state is", state);
-  if (!state) {
-    console.log("User is not playing music through the player sdk");
-    // return;
-  }
-  let {
-    current_track,
-    next_tracks: [next_track],
-  } = state.track_window;
-  console.log("Playing", current_track);
-  console.log("Playing next", next_track);
+  return new Promise((resolve, reject) => {
+    console.log("state is", state);
+    if (!state) {
+      console.log("User is not playing music through the player sdk");
+      return;
+    }
+    let {
+      current_track,
+      next_tracks: [next_track],
+    } = state.track_window;
+    console.log("Playing", current_track);
+    console.log("Playing next", next_track);
+    resolve(current_track);
+  });
 };
 
 export { playSong, getCurrentState, getVolume };

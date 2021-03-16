@@ -9,6 +9,7 @@ import { setupPlayer } from "../../player/player.js";
 import * as Player from "../../player/playerAPI.js";
 import * as SpotifyAPI from "../../player/webApi.js";
 import MainContainer from "../mainApp/MainContainer.jsx";
+import BsMusicPlayerFill from "react-icons/bs";
 
 const url = "http://localhost:3000";
 const Login = () => {
@@ -49,7 +50,7 @@ const Login = () => {
   }, [loginState]);
 
   return (
-    <Container>
+    <Container fluid>
       {!loggedOn ? (
         <>
           <br></br>
@@ -64,7 +65,7 @@ const Login = () => {
                 </p>
                 <p>
                   <Button
-                    variant="success"
+                    variant="danger"
                     onClick={() => {
                       window.location = `${url}/login`;
                       setLoggedOn(true);

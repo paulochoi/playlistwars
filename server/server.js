@@ -24,7 +24,7 @@ app.get('/login', (req, res) => {
   console.log(STATE_KEY, state);
   res.cookie(STATE_KEY, state);
   const scope =
-    'user-read-currently-playing streaming playlist-modify-public user-read-email user-read-private';
+    'user-read-currently-playing streaming playlist-modify-public playlist-read-private playlist-read-collaborative user-read-email user-read-private';
 
   res.redirect(
     `https://accounts.spotify.com/authorize?${querystring.stringify({

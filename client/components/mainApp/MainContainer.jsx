@@ -5,6 +5,7 @@ import Select from "react-select";
 import * as SpotifyAPI from "../../player/webApi.js";
 import * as Player from "../../player/playerAPI.js";
 import Tracks from "./Tracks.jsx";
+import { BsMusicPlayerFill } from "react-icons/bs";
 
 const roundTime = (item) => {
   return +item < 10 ? `0${item}` : item;
@@ -34,13 +35,13 @@ const MainContainer = ({
       console.log("Loaded Playlist");
       console.log(playLists);
       for (const p of playLists) {
-        if (p.images[2]) {
+        if (p.images[0]) {
           tempOptions.push({
             value: p.id,
             label: (
               <span>
                 <img
-                  src={p.images[2].url}
+                  src={p.images[0].url}
                   width="25"
                   height="25"
                   style={{ padding: "3px" }}
@@ -69,7 +70,7 @@ const MainContainer = ({
     let interval = 0;
     const tracks = await SpotifyAPI.getPlaylistTracks(loginState, e.value);
     console.log(tracks);
-    setPlaylistTracks(tracks);
+    setPlaylistTracks({ ...tracks, votes: 0 });
     await Player.playSong(clientID, tracks.items[0].track.uri, loginState);
     const currentTrack = await Player.getCurrentState(playerInstance);
     setPlaying(currentTrack);
@@ -97,8 +98,11 @@ const MainContainer = ({
 
   return (
     <>
-      <Navbar bg="dark" variant="dark" fixed="top">
-        <Navbar.Brand>PLAYLIST WARS</Navbar.Brand>
+      <Navbar bg="danger" variant="dark" fixed="top">
+        <Navbar.Brand className="align-icon">
+          {/* <BsMusicPlayerFill value={{ size: "2em" }} className="align-icon" /> */}
+          <span className="logoText">PLAYLIST WARS</span>
+        </Navbar.Brand>
         <Navbar.Collapse className="justify-content-end">
           {image ? (
             <>
@@ -128,7 +132,7 @@ const MainContainer = ({
         </Navbar.Collapse>
       </Navbar>
       <Tracks tracks={playlistTracks} />
-      <Navbar bg="dark" variant="dark" fixed="bottom">
+      <Navbar bg="secondary" variant="dark" fixed="bottom">
         {playing ? (
           <>
             <Navbar.Brand href="#home" className="p-1">
@@ -139,8 +143,10 @@ const MainContainer = ({
               ></img>
             </Navbar.Brand>
             <Navbar.Text>
-              {playing.artists[0].name} - {playing.name} - {trackLength} -{" "}
-              {currentTrackTime}
+              {playing.artists[0].name} - {playing.name} -{" "}
+              <a href="#login">
+                {trackLength} - {currentTrackTime}
+              </a>
             </Navbar.Text>
           </>
         ) : null}

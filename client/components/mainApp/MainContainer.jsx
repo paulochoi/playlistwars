@@ -4,6 +4,11 @@ import Select from "react-select";
 // import { setupPlayer } from "../../player/player.js";
 import * as SpotifyAPI from "../../player/webApi.js";
 import * as Player from "../../player/playerAPI.js";
+import Tracks from "./Tracks.jsx";
+
+const roundTime = (item) => {
+  return +item < 10 ? `0${item}` : item;
+};
 
 const MainContainer = ({
   name,
@@ -70,18 +75,20 @@ const MainContainer = ({
     setPlaying(currentTrack);
     console.log("CURRENT TRACK", currentTrack);
     setTrackLength(
-      Math.floor(currentTrack.duration_ms / 1000 / 60) +
+      roundTime(Math.floor(currentTrack.duration_ms / 1000 / 60)) +
         ":" +
         ((currentTrack.duration_ms / 1000) % 60
-          ? Math.round((currentTrack.duration_ms / 1000) % 60)
+          ? roundTime(Math.round(currentTrack.duration_ms / 1000) % 60)
           : "00")
     );
     setInterval(() => {
       interval += 1000;
       setCurrentTrackTime(
-        Math.floor(interval / 1000 / 60) +
+        roundTime(Math.floor(interval / 1000 / 60)) +
           ":" +
-          ((interval / 1000) % 60 ? Math.round((interval / 1000) % 60) : "00")
+          ((interval / 1000) % 60
+            ? roundTime(Math.round((interval / 1000) % 60))
+            : "00")
       );
     }, 1000);
     console.log("Playing=====", playing);
@@ -120,7 +127,7 @@ const MainContainer = ({
           )}
         </Navbar.Collapse>
       </Navbar>
-
+      <Tracks tracks={playlistTracks} />
       <Navbar bg="dark" variant="dark" fixed="bottom">
         {playing ? (
           <>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Navbar from "react-bootstrap/Navbar";
 import Select from "react-select";
 // import { setupPlayer } from "../../player/player.js";
@@ -10,6 +10,14 @@ import { BsMusicPlayerFill } from "react-icons/bs";
 const roundTime = (item) => {
   return +item < 10 ? `0${item}` : item;
 };
+
+function usePrevious(value) {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+}
 
 const MainContainer = ({
   name,
@@ -26,6 +34,8 @@ const MainContainer = ({
   const [trackLength, setTrackLength] = useState("0:00");
   const [currentTrackTime, setCurrentTrackTime] = useState("0:00");
   const [playlistTracks, setPlaylistTracks] = useState();
+  let nowPlaying = [];
+
   useEffect(async () => {
     const tempOptions = [];
     if (playLists && playLists.length > 0) {
@@ -58,20 +68,31 @@ const MainContainer = ({
     }
   }, [playLists]);
 
-  const playlistSelected = async (e) => {
-    console.log(e.label.props.children[1]);
-    setSelected(e.label.props.children[1]);
+  useEffect(() => {
+    console.log("use effect playing", playing);
+    if (!playing && playlistTracks && playlistTracks.length > 0) {
+      playTrack(playlistTracks);
+    } else if (
+      playlistTracks &&
+      playlistTracks.length > 0 &&
+      playing &&
+      playing.name !== playlistTracks[0].name
+    ) {
+      console.log("plyalisttracks changed", playlistTracks[0].id, playing.id);
+      playTrack(playlistTracks);
+    }
+  }, [playlistTracks]);
+
+  const playTrack = async (tracks) => {
+    console.log("calling playtrack");
     // Set a fake timeout to get the highest timeout id
     var highestTimeoutId = setTimeout(";");
     for (var i = 0; i < highestTimeoutId; i++) {
       clearTimeout(i);
     }
-    console.log(e.value);
     let interval = 0;
-    const tracks = await SpotifyAPI.getPlaylistTracks(loginState, e.value);
-    console.log(tracks);
-    setPlaylistTracks({ ...tracks, votes: 0 });
-    await Player.playSong(clientID, tracks.items[0].track.uri, loginState);
+    console.log("trying to play", tracks);
+    await Player.playSong(clientID, tracks[0].uri, loginState);
     const currentTrack = await Player.getCurrentState(playerInstance);
     setPlaying(currentTrack);
     console.log("CURRENT TRACK", currentTrack);
@@ -94,6 +115,23 @@ const MainContainer = ({
     }, 1000);
     console.log("Playing=====", playing);
     Player.getVolume(playerInstance);
+  };
+
+  const playlistSelected = async (e) => {
+    console.log(e.label.props.children[1]);
+    setSelected(e.label.props.children[1]);
+
+    console.log(e.value);
+    const tracks = await SpotifyAPI.getPlaylistTracks(loginState, e.value);
+    setPlaylistTracks(tracks.items.map((v) => ({ ...v.track, votes: 0 })));
+  };
+
+  const upvoted = (track) => {
+    console.log("voted", track);
+    playlistTracks.map((v) => (v.id === track ? (v.votes += 1) : null));
+    playlistTracks.sort((a, b) => b.votes - a.votes);
+    nowPlaying = playlistTracks[0];
+    setPlaylistTracks([...playlistTracks]);
   };
 
   return (
@@ -131,7 +169,7 @@ const MainContainer = ({
           )}
         </Navbar.Collapse>
       </Navbar>
-      <Tracks tracks={playlistTracks} />
+      <Tracks tracks={playlistTracks} upvoted={upvoted} />
       <Navbar bg="secondary" variant="dark" fixed="bottom">
         {playing ? (
           <>
@@ -143,7 +181,10 @@ const MainContainer = ({
               ></img>
             </Navbar.Brand>
             <Navbar.Text>
-              {playing.artists[0].name} - {playing.name} -{" "}
+              <mark>
+                {playing.artists[0].name} - {playing.name}
+              </mark>{" "}
+              -{" "}
               <a href="#login">
                 {trackLength} - {currentTrackTime}
               </a>

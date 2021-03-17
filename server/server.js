@@ -3,6 +3,7 @@ const cookieParser = require('cookie-parser');
 const querystring = require('querystring');
 const request = require('request'); // "Request" library
 const cors = require('cors');
+const models = require('./models/playlistModels');
 require('dotenv').config();
 
 const { generateRandomString } = require('./utils/auth.js');
@@ -77,6 +78,7 @@ app.get('/callback', (req, res) => {
     });
   }
 });
+
 /**
  * start server
  */

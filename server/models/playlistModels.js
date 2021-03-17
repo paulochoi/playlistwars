@@ -14,7 +14,7 @@ mongoose
   .then(() => console.log('Connected to Mongo DB.'))
   .catch((err) => console.log(err));
 
-const Schema = mongoose.Schema;
+const { Schema } = mongoose;
 
 const playlistSchema = new Schema({
   _id: Schema.Types.ObjectId,

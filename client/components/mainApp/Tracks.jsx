@@ -39,7 +39,7 @@ const Tracks = ({ tracks, upvoted }) => {
                       onClick={() => upvoted(t.id)}
                     ></div>
                     {t.votes}
-                    <div className="triangle-down"></div>
+                    {/* <div className="triangle-down"></div> */}
                   </td>
                   <td className="align-middle">
                     <img

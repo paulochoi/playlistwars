@@ -31,7 +31,7 @@ const Login = () => {
       SpotifyAPI.getPlaylists(loginState);
       const user = await SpotifyAPI.getUserInfo(loginState);
       const playlists = await SpotifyAPI.getPlaylists(loginState);
-      console.log(playlists.items);
+      // console.log(playlists.items);
       setPlaylists(playlists.items);
       const { display_name, email, images } = user;
       setName(display_name);

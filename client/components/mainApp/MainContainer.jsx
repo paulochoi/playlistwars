@@ -39,11 +39,11 @@ const MainContainer = ({
   useEffect(async () => {
     const tempOptions = [];
     if (playLists && playLists.length > 0) {
-      console.log("LOGINSTATE", loginState);
+      // console.log("LOGINSTATE", loginState);
       // const { status, device_id, instance } = await setupPlayer(loginState);
       //setDeviceID(device_id);
-      console.log("Loaded Playlist");
-      console.log(playLists);
+      // console.log("Loaded Playlist");
+      // console.log(playLists);
       for (const p of playLists) {
         if (p.images[0]) {
           tempOptions.push({
@@ -64,12 +64,24 @@ const MainContainer = ({
       }
       setOptions(tempOptions);
     } else {
-      console.log("Not Loaded");
+      // console.log("Not Loaded");
     }
   }, [playLists]);
 
-  useEffect(() => {
-    console.log("use effect playing", playing);
+  useEffect(async () => {
+    // console.log("use effect playing", playing);
+    if (selected && playlistTracks) {
+      const creationAPIObj = {
+        name: selected,
+        tracks: playlistTracks.map((v) => {
+          return {
+            trackName: v.name,
+            votes: 0,
+          };
+        }),
+      };
+    }
+    console.log("FOR PLAYLIST", selected, playlistTracks);
     if (!playing && playlistTracks && playlistTracks.length > 0) {
       playTrack(playlistTracks);
     } else if (
@@ -78,24 +90,26 @@ const MainContainer = ({
       playing &&
       playing.name !== playlistTracks[0].name
     ) {
-      console.log("plyalisttracks changed", playlistTracks[0].id, playing.id);
+      // console.log("plyalisttracks changed", playlistTracks[0].id, playing.id);
       playTrack(playlistTracks);
     }
   }, [playlistTracks]);
 
   const playTrack = async (tracks) => {
-    console.log("calling playtrack");
+    // console.log("calling playtrack");
     // Set a fake timeout to get the highest timeout id
     var highestTimeoutId = setTimeout(";");
     for (var i = 0; i < highestTimeoutId; i++) {
       clearTimeout(i);
     }
     let interval = 0;
-    console.log("trying to play", tracks);
+    // console.log("trying to play", tracks);
     await Player.playSong(clientID, tracks[0].uri, loginState);
     const currentTrack = await Player.getCurrentState(playerInstance);
     setPlaying(currentTrack);
-    console.log("CURRENT TRACK", currentTrack);
+    // console.log("CURRENT TRACK", currentTrack);
+    Player.setVolume(playerInstance);
+    Player.getVolume(playerInstance);
     setTrackLength(
       roundTime(Math.floor(currentTrack.duration_ms / 1000 / 60)) +
         ":" +
@@ -113,21 +127,51 @@ const MainContainer = ({
             : "00")
       );
     }, 1000);
-    console.log("Playing=====", playing);
-    Player.getVolume(playerInstance);
   };
 
   const playlistSelected = async (e) => {
-    console.log(e.label.props.children[1]);
+    // console.log(e.label.props.children[1]);
     setSelected(e.label.props.children[1]);
+    // console.log(e.value);
+    let tracks = await SpotifyAPI.getPlaylistTracks(loginState, e.value);
+    // console.log(tracks.items);
+    const creationAPIObj = {
+      name: e.label.props.children[1],
+      tracks: tracks.items.map((v) => {
+        return {
+          trackName: v.track.name,
+          votes: 0,
+        };
+      }),
+    };
 
-    console.log(e.value);
-    const tracks = await SpotifyAPI.getPlaylistTracks(loginState, e.value);
-    setPlaylistTracks(tracks.items.map((v) => ({ ...v.track, votes: 0 })));
+    const response = fetch("http://localhost:3000/checkPlaylist", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(creationAPIObj),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        const tempObj = {};
+        console.log("DATA IS", data);
+        for (const d of data.tracks) {
+          tempObj[d.trackName] = d.votes;
+        }
+        console.log("TEMPOBJ IS", tempObj);
+        tracks = tracks.items.map((v) => ({
+          ...v.track,
+          votes: tempObj[v.track.name],
+        }));
+        tracks.sort((a, b) => b.votes - a.votes);
+        setPlaylistTracks(tracks);
+      });
   };
 
   const upvoted = (track) => {
-    console.log("voted", track);
+    // console.log("voted", track);
     playlistTracks.map((v) => (v.id === track ? (v.votes += 1) : null));
     playlistTracks.sort((a, b) => b.votes - a.votes);
     nowPlaying = playlistTracks[0];

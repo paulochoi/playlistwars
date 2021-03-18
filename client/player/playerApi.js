@@ -22,6 +22,11 @@ const getVolume = (player) => {
   });
 };
 
+const setVolume = (player) => {
+  player.setVolume(0.3).then((volume) => {
+    console.log(`Volume set to 0.5`);
+  });
+};
 const getCurrentState = async (player) => {
   const state = await player.getCurrentState();
   return new Promise((resolve, reject) => {
@@ -40,4 +45,4 @@ const getCurrentState = async (player) => {
   });
 };
 
-export { playSong, getCurrentState, getVolume };
+export { playSong, getCurrentState, getVolume, setVolume };

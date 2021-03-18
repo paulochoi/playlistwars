@@ -12,6 +12,8 @@ const app = express();
 const PORT = '3000';
 const STATE_KEY = 'spotify_auth_state';
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(cookieParser());
 
@@ -77,6 +79,21 @@ app.get('/callback', (req, res) => {
       res.redirect(uri + '?access_token=' + access_token);
     });
   }
+});
+
+app.post('/checkPlaylist', async (req, res) => {
+  // console.log('BODY IS', req.body);
+  console.log('inside checkplaylist');
+  console.log({ name: req.body.name });
+  const result = await models.Playlist.findOne({ name: req.body.name });
+  if (!result) {
+    const created = await models.Playlist.create(req.body);
+    // console.log('CREATED', created);
+    return res.json(created);
+  }
+  console.log('FOUND', result);
+  return res.json(result);
+  // console.log('FOUND', found);
 });
 
 /**

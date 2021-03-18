@@ -13,7 +13,7 @@ const getDuration = (time) => {
 };
 const Tracks = ({ tracks, upvoted }) => {
   useEffect(() => {
-    if (tracks && tracks.length > 0) console.log("TRACKS====", tracks);
+    // if (tracks && tracks.length > 0) console.log("TRACKS====", tracks);
   }, [tracks]);
 
   return (

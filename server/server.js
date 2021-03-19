@@ -96,6 +96,18 @@ app.post('/checkPlaylist', async (req, res) => {
   // console.log('FOUND', found);
 });
 
+app.post('/upvoteSong', async (req, res) => {
+  const { playlist, name } = req.body;
+  console.log(playlist, name);
+  const found = await models.Playlist.findOne({ name: playlist });
+
+  found.tracks.map((track) =>
+    track.trackName === name ? (track.votes += 1) : null
+  );
+  const updated = await found.save();
+  res.json({ data: 'OK' });
+});
+
 /**
  * start server
  */

@@ -170,11 +170,22 @@ const MainContainer = ({
       });
   };
 
-  const upvoted = (track) => {
-    // console.log("voted", track);
+  const upvoted = (track, trackName) => {
+    console.log("voted", track);
     playlistTracks.map((v) => (v.id === track ? (v.votes += 1) : null));
     playlistTracks.sort((a, b) => b.votes - a.votes);
     nowPlaying = playlistTracks[0];
+    console.log(nowPlaying.name, selected);
+
+    const response = fetch("http://localhost:3000/upvoteSong", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ playlist: selected, name: trackName }),
+    });
+
     setPlaylistTracks([...playlistTracks]);
   };
 

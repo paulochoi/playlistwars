@@ -36,7 +36,7 @@ const Tracks = ({ tracks, upvoted }) => {
                   <td className="text-center">
                     <div
                       className="triangle-up"
-                      onClick={() => upvoted(t.id)}
+                      onClick={() => upvoted(t.id, t.name)}
                     ></div>
                     {t.votes}
                     {/* <div className="triangle-down"></div> */}

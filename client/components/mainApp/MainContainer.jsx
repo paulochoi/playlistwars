@@ -6,6 +6,7 @@ import * as SpotifyAPI from "../../player/webApi.js";
 import * as Player from "../../player/playerAPI.js";
 import Tracks from "./Tracks.jsx";
 import { BsMusicPlayerFill } from "react-icons/bs";
+import { AiFillPauseCircle, AiFillPlayCircle } from "react-icons/ai";
 
 const roundTime = (item) => {
   return +item < 10 ? `0${item}` : item;
@@ -34,6 +35,7 @@ const MainContainer = ({
   const [trackLength, setTrackLength] = useState("0:00");
   const [currentTrackTime, setCurrentTrackTime] = useState("0:00");
   const [playlistTracks, setPlaylistTracks] = useState();
+  const [playlistImage, setPlaylistImage] = useState();
   let nowPlaying = [];
 
   useEffect(async () => {
@@ -130,7 +132,8 @@ const MainContainer = ({
   };
 
   const playlistSelected = async (e) => {
-    // console.log(e.label.props.children[1]);
+    console.log("PROPS", e.label.props.children);
+    setPlaylistImage(e.label.props.children[0].props.src);
     setSelected(e.label.props.children[1]);
     // console.log(e.value);
     let tracks = await SpotifyAPI.getPlaylistTracks(loginState, e.value);
@@ -192,8 +195,8 @@ const MainContainer = ({
   return (
     <>
       <Navbar bg="danger" variant="dark" fixed="top">
-        <Navbar.Brand className="align-icon">
-          {/* <BsMusicPlayerFill value={{ size: "2em" }} className="align-icon" /> */}
+        <Navbar.Brand>
+          <BsMusicPlayerFill value={{ size: "2em" }} className="align-icon" />
           <span className="logoText">PLAYLIST WARS</span>
         </Navbar.Brand>
         <Navbar.Collapse className="justify-content-end">
@@ -247,13 +250,16 @@ const MainContainer = ({
           </>
         ) : null}
         <Navbar.Collapse className="justify-content-end">
-          <Navbar.Text>
-            {selected ? (
-              <>
+          {selected ? (
+            <>
+              <Navbar.Brand>
+                <img src={playlistImage} width="30" height="30"></img>
+              </Navbar.Brand>
+              <Navbar.Text>
                 Current Playlist: <a href="#login">{selected}</a>
-              </>
-            ) : null}
-          </Navbar.Text>
+              </Navbar.Text>
+            </>
+          ) : null}
         </Navbar.Collapse>
       </Navbar>
     </>

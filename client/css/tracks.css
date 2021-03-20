@@ -26,4 +26,10 @@
 
 .align-icon {
   vertical-align: baseline;
+  height: 15px;
+}
+
+.mainPageIcon {
+  vertical-align: baseline;
+  height: 30px;
 }

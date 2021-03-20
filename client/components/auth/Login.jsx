@@ -9,8 +9,8 @@ import { setupPlayer } from "../../player/player.js";
 import * as Player from "../../player/playerAPI.js";
 import * as SpotifyAPI from "../../player/webApi.js";
 import MainContainer from "../mainApp/MainContainer.jsx";
-import BsMusicPlayerFill from "react-icons/bs";
-
+import { BsMusicPlayerFill } from "react-icons/bs";
+import { BiLogInCircle } from "react-icons/bi";
 const url = "http://localhost:3000";
 const Login = () => {
   const [name, setName] = useState("");
@@ -58,7 +58,10 @@ const Login = () => {
             <Col md lg="2"></Col>
             <Col>
               <Jumbotron bg="dark" variant="dark">
-                <h1>PLAYLIST WARS</h1>
+                <h1>
+                  <BsMusicPlayerFill className="mainPageIcon" />
+                  PLAYLIST WARS
+                </h1>
                 <p>
                   Vote on your favorite song. The most upvoted song will be
                   played next!
@@ -71,7 +74,7 @@ const Login = () => {
                       setLoggedOn(true);
                     }}
                   >
-                    Login with Spotify
+                    <BiLogInCircle /> Login with Spotify
                   </Button>
                 </p>
               </Jumbotron>
@@ -80,14 +83,18 @@ const Login = () => {
           </Row>
         </>
       ) : (
-        <MainContainer
-          name={name}
-          image={image}
-          playLists={playlists}
-          loginState={loginState}
-          clientID={clientID}
-          playerInstance={playerInstance}
-        />
+        <Row>
+          <Col>
+            <MainContainer
+              name={name}
+              image={image}
+              playLists={playlists}
+              loginState={loginState}
+              clientID={clientID}
+              playerInstance={playerInstance}
+            />
+          </Col>
+        </Row>
       )}
     </Container>
   );
